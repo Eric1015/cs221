@@ -64,7 +64,18 @@ void twoDtree::remove(Node* subroot) {
 
 
 void twoDtree::copy(const twoDtree & orig){
-	/* your code here */
+	preOrderCopy(root, orig.root);
+	height = orig.height;
+	width = orig.width;
+}
+
+void twoDtree::preOrderCopy(Node* subroot, Node* otherSubroot) {
+	Node newNode = Node(otherSubroot->upLeft, otherSubroot->lowRight, otherSubroot->avg);
+	subroot = &newNode;
+	if (otherSubroot->left != NULL)
+		preOrderCopy(subroot->left, otherSubroot->left);
+	if (otherSubroot->right != NULL)
+		preOrderCopy(subroot->right, otherSubroot->right);
 }
 
 

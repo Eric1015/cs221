@@ -159,7 +159,7 @@ private:
    * A recursive call to deallocate all the children that subroot has,
    * then deallocate subroot itself
    * A helper function for clear()
-   /
+   */
    void twoDtree::remove(Node* subroot);
 
    /**
@@ -169,6 +169,8 @@ private:
    * @param other The twoDtree to be copied.
    */
    void copy(const twoDtree & other);
+
+   void preOrderCopy(Node* subroot, Node* otherSubroot);
 
    /**
    * Private helper function for the constructor. Recursively builds
