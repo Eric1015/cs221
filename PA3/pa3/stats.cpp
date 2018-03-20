@@ -81,7 +81,63 @@ stats::stats(PNG & im) {
 	int height = im.height();
 	for (unsigned i = 0; i < width; i++) {
 		for (unsigned j = 0; j < height; j++) {
+			RGBAPixel* current = im.getPixel(i, j);
+			long sum = current->r;
+			if (i > 0)
+				sum += sumRed[i - 1][j];
+			if (j > 0)
+				sum += sumRed[i][j - 1];
+			if (i > 0 && j > 0)
+				sum -= sumRed[i - 1][j - 1];
+			sumRed[i][j] = sum;
 
+			sum = current->r;
+			sum *= sum;
+			if (i > 0)
+				sum += sumsqRed[i - 1][j];
+			if (j > 0)
+				sum += sumsqRed[i][j - 1];
+			if (i > 0 && j > 0)
+				sum -= sumsqRed[i - 1][j - 1];
+			sumsqRed[i][j] = sum;
+
+			sum = current->b;
+			if (i > 0)
+				sum += sumBlue[i - 1][j];
+			if (j > 0)
+				sum += sumBlue[i][j - 1];
+			if (i > 0 && j > 0)
+				sum -= sumBlue[i - 1][j - 1];
+			sumBlue[i][j] = sum;
+
+			sum = current->b;
+			sum *= sum;
+			if (i > 0)
+				sum += sumsqBlue[i - 1][j];
+			if (j > 0)
+				sum += sumsqBlue[i][j - 1];
+			if (i > 0 && j > 0)
+				sum -= sumsqBlue[i - 1][j - 1];
+			sumsqBlue[i][j] = sum;
+
+			sum = current->g;
+			if (i > 0)
+				sum += sumGreen[i - 1][j];
+			if (j > 0)
+				sum += sumGreen[i][j - 1];
+			if (i > 0 && j > 0)
+				sum -= sumGreen[i - 1][j - 1];
+			sumGreen[i][j] = sum;
+
+			sum = current->g;
+			sum *= sum;
+			if (i > 0)
+				sum += sumsqGreen[i - 1][j];
+			if (j > 0)
+				sum += sumsqGreen[i][j - 1];
+			if (i > 0 && j > 0)
+				sum -= sumsqGreen[i - 1][j - 1];
+			sumsqGreen[i][j] = sum;
 		}
 	}
 }
