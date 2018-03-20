@@ -140,4 +140,18 @@ stats::stats(PNG & im) {
 			sumsqGreen[i][j] = sum;
 		}
 	}
+
+	long stats::getScore(pair<int,int> ul, pair<int,int> lr) {
+		return getSumSq('r', ul, lr) - getSum('r', ul, lr) / rectArea
+			+ getSumSq('b', ul, lr) - getSum('b', ul, lr) / rectArea
+			+ getSumSq('g', ul, lr) - getSum('g', ul, lr) / rectArea;
+	}
+
+	RGBAPixel stats::getAvg(pair<int, int> ul, pair<int, int> lr) {
+
+	}
+
+	long stats::rectArea(pair<int, int> ul, pair<int, int> lr) {
+
+	}
 }
