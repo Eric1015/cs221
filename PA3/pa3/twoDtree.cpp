@@ -49,7 +49,17 @@ void twoDtree::prune(double pct, int tol){
 }
 
 void twoDtree::clear() {
-	/* your code here */
+	remove(root);
+}
+
+void twoDtree::remove(Node* subroot) {
+	if (subroot->left != NULL)
+		remove(subroot->left);
+	if (subroot->right != NULL)
+		remove(subroot->right);
+	subroot->left = NULL;
+	subroot->right = NULL;
+	free(subroot);
 }
 
 

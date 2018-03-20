@@ -156,6 +156,13 @@ private:
    void clear();
 
    /**
+   * A recursive call to deallocate all the children that subroot has,
+   * then deallocate subroot itself
+   * A helper function for clear()
+   /
+   void twoDtree::remove(Node* subroot);
+
+   /**
    * Copies the parameter other twoDtree into the current twoDtree.
    * Does not free any memory. Called by copy constructor and op=.
    * You may want a recursive helper function for this one.
