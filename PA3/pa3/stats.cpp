@@ -7,6 +7,7 @@ using namespace std;
 using namespace cs221util;
 
 long stats::getSum(char channel, pair<int, int> ul, pair<int, int> lr) {
+	//TODO::consider the case that channel is not any of r, g, b
 	long sum = 0;
 	int left_x = 0;
 	if (ul.first > 0)
@@ -42,6 +43,7 @@ long stats::getSum(char channel, pair<int, int> ul, pair<int, int> lr) {
 }
 
 long stats::getSumSq(char channel, pair<int, int> ul, pair<int, int> lr) {
+	//TODO::consider the case that channel is not any of r, g, b
 	long sum = 0;
 	int left_x = 0;
 	if (ul.first > 0)
@@ -77,6 +79,7 @@ long stats::getSumSq(char channel, pair<int, int> ul, pair<int, int> lr) {
 }
 
 stats::stats(PNG & im) {
+	//TODO::consider the case im is NULL
 	int width = im.width();
 	int height = im.height();
 	for (unsigned i = 0; i < width; i++) {
@@ -140,18 +143,24 @@ stats::stats(PNG & im) {
 			sumsqGreen[i][j] = sum;
 		}
 	}
+}
 
-	long stats::getScore(pair<int,int> ul, pair<int,int> lr) {
-		return getSumSq('r', ul, lr) - getSum('r', ul, lr) / rectArea
-			+ getSumSq('b', ul, lr) - getSum('b', ul, lr) / rectArea
-			+ getSumSq('g', ul, lr) - getSum('g', ul, lr) / rectArea;
-	}
+long stats::getScore(pair<int, int> ul, pair<int, int> lr) {
+	return getSumSq('r', ul, lr) - getSum('r', ul, lr) / rectArea(ul, lr)
+		+ getSumSq('b', ul, lr) - getSum('b', ul, lr) / rectArea(ul, lr)
+		+ getSumSq('g', ul, lr) - getSum('g', ul, lr) / rectArea(ul, lr);
+}
 
-	RGBAPixel stats::getAvg(pair<int, int> ul, pair<int, int> lr) {
+RGBAPixel stats::getAvg(pair<int, int> ul, pair<int, int> lr) {
+	int red = getSum('r', ul, lr) / rectArea(ul, lr);
+	int blue = getSum('b', ul, lr) / rectArea(ul, lr);
+	int green = getSum('g', ul, lr) / rectArea(ul, lr);
+	RGBAPixel ave = RGBAPixel(red, green, blue);
+	return ave;
+}
 
-	}
-
-	long stats::rectArea(pair<int, int> ul, pair<int, int> lr) {
-
-	}
+long stats::rectArea(pair<int, int> ul, pair<int, int> lr) {
+	long height = ul.second - lr.second;
+	long width = ul.first - lr.first;
+	return height * width;
 }
