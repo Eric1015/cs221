@@ -34,10 +34,15 @@ twoDtree & twoDtree::operator=(const twoDtree & rhs){
 	return *this;
 }
 
-twoDtree::twoDtree(PNG & imIn){ /* your code here */ }
+twoDtree::twoDtree(PNG & imIn){ 
+	stats s = stats(imIn); 
+}
 
 twoDtree::Node * twoDtree::buildTree(stats & s, pair<int,int> ul, pair<int,int> lr) {
-	/* your code here */
+	if (ul.first != lr.first || ul.second != lr.second) {
+		long smallest;
+
+	}
 }
 
 PNG twoDtree::render(){
