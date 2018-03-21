@@ -120,6 +120,8 @@ public:
     */
    PNG render();
 
+   void assignPixel(Node* subroot, PNG image);
+
    /*
     *  Prune function trims subtrees as high as possible in the tree.
     *  A subtree is pruned (cleared) if at least pct of its leaves are within 

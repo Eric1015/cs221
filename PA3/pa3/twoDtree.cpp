@@ -101,7 +101,20 @@ twoDtree::Node * twoDtree::buildTree(stats & s, pair<int,int> ul, pair<int,int> 
 }
 
 PNG twoDtree::render(){
-	/* your code here */
+	int width = root->upLeft.first - root->lowRight.first;
+	int height = root->upLeft.second - root->lowRight.second;
+	PNG image = PNG((root->upLeft.first - root->lowRight.first), (root->upLeft.second - root->lowRight.second));
+	assignPixel(root, image);
+}
+
+void twoDtree::assignPixel(Node* subroot, PNG image) {
+	if (subroot == NULL) {
+		*image.getPixel(subroot->upLeft.first, subroot->upLeft.second) = subroot->avg; 
+	}
+	else {
+		assignPixel(subroot->left, image);
+		assignPixel(subroot->right, image);
+	}
 }
 
 void twoDtree::prune(double pct, int tol){
