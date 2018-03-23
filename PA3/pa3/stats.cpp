@@ -82,8 +82,8 @@ stats::stats(PNG & im) {
 	//TODO::consider the case im is NULL
 	int width = im.width();
 	int height = im.height();
-	for (unsigned i = 0; i < width; i++) {
-		for (unsigned j = 0; j < height; j++) {
+	for (int i = 0; i < width; i++) {
+		for (int j = 0; j < height; j++) {
 			RGBAPixel* current = im.getPixel(i, j);
 			long sum = current->r;
 			if (i > 0)

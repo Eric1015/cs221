@@ -32,6 +32,12 @@ vector<pair<string, int>> WordFreq<Dict>::getWords(int threshold) const
      * @see char_counter.cpp if you're having trouble.
      */
 
+	TextFile file = TextFile(filename);
+	string current = file.getNextWord();
+
+	for (int i = 0; i < ret.size(); i++) {
+		ret[i].
+	}
 
     (void) threshold; // prevent warnings... When you implement this function, remove this line.
 

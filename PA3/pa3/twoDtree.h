@@ -13,6 +13,7 @@
 #include "cs221util/PNG.h"
 #include "cs221util/RGBAPixel.h"
 #include "stats.h"
+#include <vector>
 using namespace std;
 using namespace cs221util;
 
@@ -162,7 +163,7 @@ private:
    * then deallocate subroot itself
    * A helper function for clear()
    */
-   void twoDtree::remove(Node* subroot);
+   void remove(Node* subroot);
 
    /**
    * Copies the parameter other twoDtree into the current twoDtree.
@@ -182,6 +183,18 @@ private:
    * @param lr lower right point of current node's rectangle.
    */
    Node * buildTree(stats & s,pair<int,int> ul, pair<int,int> lr);
+
+   Node * getHeighestSub(Node* subroot, double pct, int tol);
+
+   /**
+   * Recursively check the tree and store every leaf into leaves
+   * with the help of sizeptr to keep track of the size of the dynamic array
+   * Helper function for prune function
+   * @param subroot current root of the subtree
+   * @param leaves stores all the leaves we obtained
+   * @param sizeptr stores the value of current size of leaves
+   */
+   void getLeaves(Node* subroot, vector<Node*> &leaves);
 
    /* =================== end of private PA3 functions ============== */
 };
