@@ -184,6 +184,14 @@ private:
    */
    Node * buildTree(stats & s,pair<int,int> ul, pair<int,int> lr);
 
+   /**
+   * Recursively go through a tree and find the heighest subtree that satisfies 
+   * the condition for prune
+   * Helper function for prune
+   * @param subroot current root of the subtree
+   * @param pct pct from prune
+   * @param tol tol from prune
+   */
    Node * getHeighestSub(Node* subroot, double pct, int tol);
 
    /**

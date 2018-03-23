@@ -82,6 +82,13 @@ stats::stats(PNG & im) {
 	//TODO::consider the case im is NULL
 	int width = im.width();
 	int height = im.height();
+	sumRed = vector<vector<long>>(height, vector<long>(width, 0));
+	sumsqRed = vector<vector<long>>(height, vector<long>(width, 0));
+	sumBlue = vector<vector<long>>(height, vector<long>(width, 0));
+	sumsqBlue = vector<vector<long>>(height, vector<long>(width, 0));
+	sumGreen = vector<vector<long>>(height, vector<long>(width, 0));
+	sumsqGreen = vector<vector<long>>(height, vector<long>(width, 0));
+
 	for (int i = 0; i < width; i++) {
 		for (int j = 0; j < height; j++) {
 			RGBAPixel* current = im.getPixel(i, j);
@@ -92,8 +99,7 @@ stats::stats(PNG & im) {
 				sum += sumRed[i][j - 1];
 			if (i > 0 && j > 0)
 				sum -= sumRed[i - 1][j - 1];
-			sumRed[i][j] = sum;
-
+			sumRed[i].push_back(sum);
 			sum = current->r;
 			sum *= sum;
 			if (i > 0)
@@ -102,7 +108,7 @@ stats::stats(PNG & im) {
 				sum += sumsqRed[i][j - 1];
 			if (i > 0 && j > 0)
 				sum -= sumsqRed[i - 1][j - 1];
-			sumsqRed[i][j] = sum;
+			sumsqRed[i].push_back(sum);
 
 			sum = current->b;
 			if (i > 0)
@@ -111,7 +117,7 @@ stats::stats(PNG & im) {
 				sum += sumBlue[i][j - 1];
 			if (i > 0 && j > 0)
 				sum -= sumBlue[i - 1][j - 1];
-			sumBlue[i][j] = sum;
+			sumBlue[i].push_back(sum);
 
 			sum = current->b;
 			sum *= sum;
@@ -121,7 +127,7 @@ stats::stats(PNG & im) {
 				sum += sumsqBlue[i][j - 1];
 			if (i > 0 && j > 0)
 				sum -= sumsqBlue[i - 1][j - 1];
-			sumsqBlue[i][j] = sum;
+			sumsqBlue[i].push_back(sum);
 
 			sum = current->g;
 			if (i > 0)
@@ -130,7 +136,7 @@ stats::stats(PNG & im) {
 				sum += sumGreen[i][j - 1];
 			if (i > 0 && j > 0)
 				sum -= sumGreen[i - 1][j - 1];
-			sumGreen[i][j] = sum;
+			sumGreen[i].push_back(sum);
 
 			sum = current->g;
 			sum *= sum;
@@ -140,7 +146,7 @@ stats::stats(PNG & im) {
 				sum += sumsqGreen[i][j - 1];
 			if (i > 0 && j > 0)
 				sum -= sumsqGreen[i - 1][j - 1];
-			sumsqGreen[i][j] = sum;
+			sumsqGreen[i].push_back(sum);
 		}
 	}
 }
@@ -160,7 +166,7 @@ RGBAPixel stats::getAvg(pair<int, int> ul, pair<int, int> lr) {
 }
 
 long stats::rectArea(pair<int, int> ul, pair<int, int> lr) {
-	long height = ul.second - lr.second;
-	long width = ul.first - lr.first;
+	long height = lr.second - ul.second + 1;
+	long width = lr.first - ul.first + 1;
 	return height * width;
 }
