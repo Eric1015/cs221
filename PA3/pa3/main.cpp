@@ -17,6 +17,15 @@ using namespace std;
 int main()
 {
 
+	PNG pic;
+	pic.readFromFile("images/test.png");
+	twoDtree test(pic);
+	twoDtree testCopy(test);
+	testCopy.prune(0.95, 10000);
+	PNG res = testCopy.render();
+	res.writeToFile("images/test-res.png");
+
+	/*
 	// read in image
 	PNG origIm1;
 	origIm1.readFromFile("images/stanley-totem-poles.png");
@@ -54,6 +63,8 @@ int main()
 	ppic2.writeToFile("images/prunedubctotem.png");
 	ppic3.writeToFile("images/prunedremb.png");
 	ppic4.writeToFile("images/prunedrosa.png");
+
+	*/
 
   return 0;
 }

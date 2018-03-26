@@ -42,24 +42,28 @@ twoDtree::twoDtree(PNG & imIn){
 	pair<int, int> end;
 	start.first = 0;
 	start.second = 0;
-	end.first = imIn.width();
-	end.second = imIn.height();
+	end.first = imIn.width() - 1;
+	end.second = imIn.height() - 1;
 	root = buildTree(s, start, end);
 }
 
 twoDtree::Node * twoDtree::buildTree(stats & s, pair<int,int> ul, pair<int,int> lr) {
+	//cout << "From buildTree function, ul is x:" << ul.first << " y:" << ul.second << " lr is x:" << lr.first << " y:" << lr.second << endl;
 	if (ul.first != lr.first || ul.second != lr.second) {
 		pair<int, int> currUL;
 		pair<int, int> currLR;
 		currUL.first = ul.first;
 		currUL.second = ul.second;
 		currLR.first = ul.first;
-		currLR.second = lr.second;
+		if (ul.first == lr.first)
+			currLR.second = ul.second;
+		else
+			currLR.second = lr.second;
 		long smallest = s.getScore(currUL, currLR);
 		pair<int, int> smallestPair;
 		smallestPair.first = currLR.first;
 		smallestPair.second = currLR.second;
-		for (int i = ul.first + 1; i < lr.first; i++) {
+		for (int i = ul.first + 1; i < lr.first - 1; i++) {
 			currLR.first = i;
 			long temp = s.getScore(currUL, currLR);
 			if (temp < smallest) {
@@ -68,7 +72,8 @@ twoDtree::Node * twoDtree::buildTree(stats & s, pair<int,int> ul, pair<int,int> 
 				smallestPair.second = currLR.second;
 			}
 		}
-		for (int i = ul.second; i < lr.second; i++) {
+		currLR.first = lr.first;
+		for (int i = ul.second; i < lr.second - 1; i++) {
 			currLR.second = i;
 			long temp = s.getScore(currUL, currLR);
 			if (temp < smallest) {
@@ -80,23 +85,25 @@ twoDtree::Node * twoDtree::buildTree(stats & s, pair<int,int> ul, pair<int,int> 
 		RGBAPixel ave = s.getAvg(ul, lr);
 		Node child = Node(ul, lr, ave);
 		Node* childptr = &child;
-		Node* leftChild = buildTree(s, ul, smallestPair);
 		pair<int, int> next;
 		if (smallestPair.first == lr.first) {
 			next.first = ul.first;
-			next.second = leftChild->lowRight.second + 1;
+			next.second = smallestPair.second + 1;
 		}
-		else if (smallestPair.second == ul.second) {
-			next.first = leftChild->lowRight.first + 1;
+		else if (smallestPair.second == lr.second) {
+			next.first = smallestPair.first + 1;
 			next.second = ul.second;
 		}
-		Node* rightChild = buildTree(s, next, lr);
-		child.left = leftChild;
-		child.right = rightChild;
+
+		childptr->left = buildTree(s, ul, smallestPair);
+		childptr->right = buildTree(s, next, lr);
+		cout << "The current other root is upLeft x:" << childptr->upLeft.first << " y:" << childptr->upLeft.second << " lowRight x:" << childptr->lowRight.first << " y:" << childptr->lowRight.second << " ";
+		cout << "The current other root's left is upLeft x:" << childptr->left->upLeft.first << " y:" << childptr->left->upLeft.second << " lowRight x:" << childptr->left->lowRight.first << " y:" << childptr->left->lowRight.second << endl;
 
 		return childptr;
 	}
 	else {
+		//cout << "ul x:" << ul.first << " y:" << ul.second << " lr x:" << lr.first << " y:" << lr.second << " is added to leaf" << endl;
 		RGBAPixel ave = s.getAvg(ul, lr);
 		Node node = Node(ul, lr, ave);
 		Node* nodeptr = &node;
@@ -153,7 +160,7 @@ twoDtree::Node* twoDtree::getHeighestSub(Node* subroot, double pct, int tol) {
 }
 
 void twoDtree::getLeaves(Node* subroot, vector<Node*> &leaves) {
-	if (subroot == NULL) {
+	if (subroot->left == NULL && subroot->right == NULL) {
 		leaves.push_back(subroot);
 	}
 	else {
@@ -178,18 +185,31 @@ void twoDtree::remove(Node* subroot) {
 
 
 void twoDtree::copy(const twoDtree & orig){
-	preOrderCopy(root, orig.root);
+	root = preOrderCopy(orig.root);
 	height = orig.height;
 	width = orig.width;
 }
 
-void twoDtree::preOrderCopy(Node* subroot, Node* otherSubroot) {
-	Node newNode = Node(otherSubroot->upLeft, otherSubroot->lowRight, otherSubroot->avg);
-	subroot = &newNode;
-	if (otherSubroot->left != NULL)
-		preOrderCopy(subroot->left, otherSubroot->left);
-	if (otherSubroot->right != NULL)
-		preOrderCopy(subroot->right, otherSubroot->right);
+twoDtree::Node* twoDtree::preOrderCopy(Node* otherSubroot) {
+	if (otherSubroot != NULL) {
+		cout << "The current other root is upLeft x:" << otherSubroot->upLeft.first << " y:" << otherSubroot->upLeft.second << " lowRight x:" << otherSubroot->lowRight.first << " y:" << otherSubroot->lowRight.second << endl;
+		cout << "The current other root's left is upLeft x:" << otherSubroot->left->upLeft.first << " y:" << otherSubroot->left->upLeft.second << " lowRight x:" << otherSubroot->left->lowRight.first << " y:" << otherSubroot->left->lowRight.second << endl;
+		Node node = Node(otherSubroot->upLeft, otherSubroot->lowRight, otherSubroot->avg);
+		Node* nodeptr = &node;
+		bool a = otherSubroot->left != NULL;
+		cout << "The left node is " << a << endl;
+		if (otherSubroot->left != NULL)
+			nodeptr->left = preOrderCopy(otherSubroot->left);
+		else
+			nodeptr->left = NULL;
+		if (otherSubroot->right != NULL)
+			nodeptr->right = preOrderCopy(otherSubroot->right);
+		else
+			nodeptr->right = NULL;
+		return nodeptr;
+	}
+	else
+		return NULL;
 }
 
 

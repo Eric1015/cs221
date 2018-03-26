@@ -173,7 +173,7 @@ private:
    */
    void copy(const twoDtree & other);
 
-   void preOrderCopy(Node* subroot, Node* otherSubroot);
+   Node* preOrderCopy(Node* otherSubroot);
 
    /**
    * Private helper function for the constructor. Recursively builds

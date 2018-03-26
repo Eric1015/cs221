@@ -8,6 +8,7 @@ using namespace cs221util;
 
 long stats::getSum(char channel, pair<int, int> ul, pair<int, int> lr) {
 	//TODO::consider the case that channel is not any of r, g, b
+	//cout << "channel is " << channel << " ul is x:" << ul.first << " y:" << ul.second << " lr is x:" << lr.first << " y:" << lr.second << endl;
 	long sum = 0;
 	int left_x = 0;
 	if (ul.first > 0)
@@ -22,10 +23,15 @@ long stats::getSum(char channel, pair<int, int> ul, pair<int, int> lr) {
 		top_y = ul.second;
 	int bottom_y = lr.second;
 	if (channel == 'r') {
+		//cout << "sum is " << sum << " sumRed[" << right_x << "][" << bottom_y << "] is " << sumRed[right_x][bottom_y] << endl;
 		sum = sumRed[right_x][bottom_y];
+		//cout << "sum is " << sum << " sumRed[" << left_x << "][" << bottom_y << "] is " << sumRed[left_x][bottom_y] << endl;
 		sum -= sumRed[left_x][bottom_y];
+		//cout << "sum is " << sum << " sumRed[" << right_x << "][" << top_y << "] is " << sumRed[right_x][top_y] << endl;
 		sum -= sumRed[right_x][top_y];
+		//cout << "sum is " << sum << " sumRed[" << left_x << "][" << top_y << "] is " << sumRed[left_x][top_y] << endl;
 		sum += sumRed[left_x][top_y];
+		//cout << "sum is " << sum << " as a result" << endl;
 	}
 	else if (channel == 'g') {
 		sum = sumGreen[right_x][bottom_y];
@@ -82,25 +88,28 @@ stats::stats(PNG & im) {
 	//TODO::consider the case im is NULL
 	int width = im.width();
 	int height = im.height();
-	sumRed = vector<vector<long>>(height, vector<long>(width, 0));
-	sumsqRed = vector<vector<long>>(height, vector<long>(width, 0));
-	sumBlue = vector<vector<long>>(height, vector<long>(width, 0));
-	sumsqBlue = vector<vector<long>>(height, vector<long>(width, 0));
-	sumGreen = vector<vector<long>>(height, vector<long>(width, 0));
-	sumsqGreen = vector<vector<long>>(height, vector<long>(width, 0));
+	cout << "width is " << width << " height is " << height << endl;
+	sumRed = vector<vector<long>>(width, vector<long>(height, 0));
+	sumsqRed = vector<vector<long>>(width, vector<long>(height, 0));
+	sumBlue = vector<vector<long>>(width, vector<long>(height, 0));
+	sumsqBlue = vector<vector<long>>(width, vector<long>(height, 0));
+	sumGreen = vector<vector<long>>(width, vector<long>(height, 0));
+	sumsqGreen = vector<vector<long>>(width, vector<long>(height, 0));
 
 	for (int i = 0; i < width; i++) {
 		for (int j = 0; j < height; j++) {
 			RGBAPixel* current = im.getPixel(i, j);
-			long sum = current->r;
+			long sum = 0;
+			unsigned long r = current->r;
+			sum += r;
 			if (i > 0)
 				sum += sumRed[i - 1][j];
 			if (j > 0)
 				sum += sumRed[i][j - 1];
 			if (i > 0 && j > 0)
 				sum -= sumRed[i - 1][j - 1];
-			sumRed[i].push_back(sum);
-			sum = current->r;
+			sumRed[i][j] = sum;
+			sum = r;
 			sum *= sum;
 			if (i > 0)
 				sum += sumsqRed[i - 1][j];
@@ -108,18 +117,19 @@ stats::stats(PNG & im) {
 				sum += sumsqRed[i][j - 1];
 			if (i > 0 && j > 0)
 				sum -= sumsqRed[i - 1][j - 1];
-			sumsqRed[i].push_back(sum);
+			sumsqRed[i][j] = sum;
 
-			sum = current->b;
+			unsigned long b = current->b;
+			sum = b;
 			if (i > 0)
 				sum += sumBlue[i - 1][j];
 			if (j > 0)
 				sum += sumBlue[i][j - 1];
 			if (i > 0 && j > 0)
 				sum -= sumBlue[i - 1][j - 1];
-			sumBlue[i].push_back(sum);
+			sumBlue[i][j] = sum;
 
-			sum = current->b;
+			sum = b;
 			sum *= sum;
 			if (i > 0)
 				sum += sumsqBlue[i - 1][j];
@@ -127,18 +137,19 @@ stats::stats(PNG & im) {
 				sum += sumsqBlue[i][j - 1];
 			if (i > 0 && j > 0)
 				sum -= sumsqBlue[i - 1][j - 1];
-			sumsqBlue[i].push_back(sum);
+			sumsqBlue[i][j] = sum;
 
-			sum = current->g;
+			unsigned long g = current->g;
+			sum = g;
 			if (i > 0)
 				sum += sumGreen[i - 1][j];
 			if (j > 0)
 				sum += sumGreen[i][j - 1];
 			if (i > 0 && j > 0)
 				sum -= sumGreen[i - 1][j - 1];
-			sumGreen[i].push_back(sum);
+			sumGreen[i][j] = sum;
 
-			sum = current->g;
+			sum = g;
 			sum *= sum;
 			if (i > 0)
 				sum += sumsqGreen[i - 1][j];
@@ -146,15 +157,16 @@ stats::stats(PNG & im) {
 				sum += sumsqGreen[i][j - 1];
 			if (i > 0 && j > 0)
 				sum -= sumsqGreen[i - 1][j - 1];
-			sumsqGreen[i].push_back(sum);
+			sumsqGreen[i][j] = sum;
 		}
 	}
 }
 
 long stats::getScore(pair<int, int> ul, pair<int, int> lr) {
-	return getSumSq('r', ul, lr) - getSum('r', ul, lr) / rectArea(ul, lr)
-		+ getSumSq('b', ul, lr) - getSum('b', ul, lr) / rectArea(ul, lr)
-		+ getSumSq('g', ul, lr) - getSum('g', ul, lr) / rectArea(ul, lr);
+	//cout << "From getScore function " << " ul is x:" << ul.first << " y:" << ul.second << " lr is x:" << lr.first << " y:" << lr.second << endl;
+	return getSumSq('r', ul, lr) - (getSum('r', ul, lr) * getSum('r', ul, lr)) / rectArea(ul, lr)
+		+ getSumSq('b', ul, lr) - (getSum('b', ul, lr) * getSum('b', ul, lr)) / rectArea(ul, lr)
+		+ getSumSq('g', ul, lr) - (getSum('g', ul, lr) * getSum('g', ul, lr)) / rectArea(ul, lr);
 }
 
 RGBAPixel stats::getAvg(pair<int, int> ul, pair<int, int> lr) {
