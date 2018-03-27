@@ -121,8 +121,6 @@ public:
     */
    PNG render();
 
-   void assignPixel(Node* subroot, PNG image);
-
    /*
     *  Prune function trims subtrees as high as possible in the tree.
     *  A subtree is pruned (cleared) if at least pct of its leaves are within 
@@ -173,7 +171,20 @@ private:
    */
    void copy(const twoDtree & other);
 
+   /**
+   * Private helper function for copy function. Recursively copy the 
+   * elements in the other tree by visiting all elements in a pre-order way
+   * @param otherSubroot the current Node in other tree
+   */
    Node* preOrderCopy(Node* otherSubroot);
+
+   /**
+   * Private helper function for render function. Recursively go through the 
+   * tree and assign each RGBAPixel value to target from PNG object
+   * @param subroot current root of the subtree
+   * @param image the subject that provides the RGBAPixel value for each Node
+   */
+   void assignPixel(Node* subroot, PNG &image);
 
    /**
    * Private helper function for the constructor. Recursively builds
@@ -186,29 +197,25 @@ private:
 
    /**
    * Recursively go through a tree and find the heighest subtree that satisfies 
-   * the condition for prune
+   * the condition for prune and trim the leaves of it
    * Helper function for prune
    * @param subroot current root of the subtree
    * @param pct pct from prune
    * @param tol tol from prune
    */
-   Node * getHeighestSub(Node* subroot, double pct, int tol);
+   void getHeighestSub(Node* subroot, double pct, int tol);
 
    /**
-   * Recursively check the tree and store every leaf into leaves
-   * with the help of sizeptr to keep track of the size of the dynamic array
-   * Helper function for prune function
+   * Private helper function for the prune function. Recursively check the tree to 
+   * count the total num of leaves and num of leaves that satisfies the range defined by tol
+   * from the current root.
    * @param subroot current root of the subtree
-   * @param leaves stores all the leaves we obtained
-   * @param sizeptr stores the value of current size of leaves
+   * @param child current focused child of subroot
+   * @param totalLeaves the total num of leaves from subroot
+   * @param numInRange the num of leaves that satisfies the range defined by tol
+   * @param tol the range defined in prune function
    */
-   void getLeaves(Node* subroot, vector<Node*> &leaves);
-
-   void printXY(int lineno, Node* subroot);
-
-   void print();
-
-   void printHelper(Node* subroot);
+   void getNumIn(Node* subroot, Node* child, int &totalLeaves, int &numInRange, int tol);
 
    /* =================== end of private PA3 functions ============== */
 };

@@ -7,8 +7,6 @@ using namespace std;
 using namespace cs221util;
 
 long stats::getSum(char channel, pair<int, int> ul, pair<int, int> lr) {
-	//TODO::consider the case that channel is not any of r, g, b
-	//cout << "channel is " << channel << " ul is x:" << ul.first << " y:" << ul.second << " lr is x:" << lr.first << " y:" << lr.second << endl;
 	long sum = 0;
 	int left_x = 0;
 	if (ul.first > 0)
@@ -23,15 +21,10 @@ long stats::getSum(char channel, pair<int, int> ul, pair<int, int> lr) {
 		top_y = ul.second;
 	int bottom_y = lr.second;
 	if (channel == 'r') {
-		//cout << "sum is " << sum << " sumRed[" << right_x << "][" << bottom_y << "] is " << sumRed[right_x][bottom_y] << endl;
 		sum = sumRed[right_x][bottom_y];
-		//cout << "sum is " << sum << " sumRed[" << left_x << "][" << bottom_y << "] is " << sumRed[left_x][bottom_y] << endl;
 		sum -= sumRed[left_x][bottom_y];
-		//cout << "sum is " << sum << " sumRed[" << right_x << "][" << top_y << "] is " << sumRed[right_x][top_y] << endl;
 		sum -= sumRed[right_x][top_y];
-		//cout << "sum is " << sum << " sumRed[" << left_x << "][" << top_y << "] is " << sumRed[left_x][top_y] << endl;
 		sum += sumRed[left_x][top_y];
-		//cout << "sum is " << sum << " as a result" << endl;
 	}
 	else if (channel == 'g') {
 		sum = sumGreen[right_x][bottom_y];
@@ -49,7 +42,6 @@ long stats::getSum(char channel, pair<int, int> ul, pair<int, int> lr) {
 }
 
 long stats::getSumSq(char channel, pair<int, int> ul, pair<int, int> lr) {
-	//TODO::consider the case that channel is not any of r, g, b
 	long sum = 0;
 	int left_x = 0;
 	if (ul.first > 0)
@@ -85,10 +77,8 @@ long stats::getSumSq(char channel, pair<int, int> ul, pair<int, int> lr) {
 }
 
 stats::stats(PNG & im) {
-	//TODO::consider the case im is NULL
 	int width = im.width();
 	int height = im.height();
-	cout << "width is " << width << " height is " << height << endl;
 	sumRed = vector<vector<long>>(width, vector<long>(height, 0));
 	sumsqRed = vector<vector<long>>(width, vector<long>(height, 0));
 	sumBlue = vector<vector<long>>(width, vector<long>(height, 0));
@@ -163,7 +153,6 @@ stats::stats(PNG & im) {
 }
 
 long stats::getScore(pair<int, int> ul, pair<int, int> lr) {
-	//cout << "From getScore function " << " ul is x:" << ul.first << " y:" << ul.second << " lr is x:" << lr.first << " y:" << lr.second << endl;
 	return getSumSq('r', ul, lr) - (getSum('r', ul, lr) * getSum('r', ul, lr)) / rectArea(ul, lr)
 		+ getSumSq('b', ul, lr) - (getSum('b', ul, lr) * getSum('b', ul, lr)) / rectArea(ul, lr)
 		+ getSumSq('g', ul, lr) - (getSum('g', ul, lr) * getSum('g', ul, lr)) / rectArea(ul, lr);
