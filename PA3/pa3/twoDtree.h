@@ -204,6 +204,12 @@ private:
    */
    void getLeaves(Node* subroot, vector<Node*> &leaves);
 
+   void printXY(int lineno, Node* subroot);
+
+   void print();
+
+   void printHelper(Node* subroot);
+
    /* =================== end of private PA3 functions ============== */
 };
 
