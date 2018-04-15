@@ -6,6 +6,7 @@
  */
 
 #include "graph_tools.h"
+#include <string>
 
 /**
  * Finds the minimum edge weight in the Graph graph.
@@ -22,13 +23,23 @@
  */
 int GraphTools::findMinWeight(Graph& graph)
 {
-    // 1. Label all edges and vertices as unexplored. You will need 
-    //    to look in graph.h for the right functions.
-    
-    // 2. Use the BFS function in graph_tools to find the minimum edge. 
-    //    Don't forget to label it.
+	// 1. Label all edges and vertices as unexplored. You will need 
+	//    to look in graph.h for the right functions.
 
-    return -1;
+	// 2. Use the BFS function in graph_tools to find the minimum edge. 
+	//    Don't forget to label it.
+
+	vector<Vertex> vertices = graph.getVertices();
+	vector<Edge> edges = graph.getEdges();
+	for (size_t i = 0; i < vertices.size(); i++) {
+		graph.setVertexLabel(vertices[i], "UNEXPLORED");
+	}
+	for (size_t i = 0; i < edges.size(); i++) {
+		graph.setEdgeLabel(edges[i].source, edges[i].dest, "UNEXPLORED");
+	}
+	Edge min = BFS(graph, vertices[0]);
+	graph.setEdgeLabel(min.source, min.dest, "MIN");
+    return min.weight;
 }
 
 /**
@@ -64,6 +75,44 @@ int GraphTools::findShortestPath(Graph& graph, Vertex start, Vertex end)
     // 3. Use the unordered map to trace from a path from the end to the start, 
     //    counting edges. You should set edges to "minpath" here too.
 
+	vector<Vertex> vertices = graph.getVertices();
+	for (size_t i = 0; i < vertices.size(); i++) {
+		graph.setVertexLabel(vertices[i], "UNEXPLORED");
+	}
+
+	bool gotToEnd = false;
+	queue<Vertex> pendingVertex;
+	pendingVertex.push(start);
+	while (!pendingVertex.empty()) {
+		Vertex curr = pendingVertex.front();
+		graph.setVertexLabel(curr, "VISITED");
+		vector<Vertex> adjacents = graph.getAdjacent(curr);
+		for (size_t i = 0; i < adjacents.size(); i++) {
+			if (graph.getVertexLabel(adjacents[i]).compare("VISITED") != 0) {
+				graph.setVertexLabel(adjacents[i], "VISITED");
+				parent[adjacents[i]] = curr;
+				pendingVertex.push(adjacents[i]);
+			}
+			if (adjacents[i] == end) {
+				gotToEnd = true;
+				break;
+			}
+		}
+		if (gotToEnd)
+			break;
+		pendingVertex.pop();
+	}
+
+	if (gotToEnd) {
+		int pathLength = 0;
+		Vertex curr = end;
+		while (curr != start) {
+			graph.setEdgeLabel(curr, parent[curr], "MINPATH");
+			curr = parent[curr];
+			pathLength++;
+		}
+		return pathLength;
+	}
     return -1;
 }
 
